@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Inter", sans-serif;
+    --color-navy: #071A36;
+    --color-teal: #00E5CC;
+    --color-coral: #FF3B5C;
+
+    /* Keyframes */
+    --keyframes-scroll-logos: scrollLogos;
+    
+    /* Animation */
+    --animate-scroll-logos: scrollLogos 25s linear infinite;
+}
+
+/* Keyframes (definición real) */
+@keyframes scrollLogos {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}

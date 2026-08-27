@@ -1,0 +1,130 @@
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { necesidadSchema, type NecesidadType } from "../schemas/necesidadSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+export default function ColaboradorPanel () {
+    const { register, formState: { errors }, handleSubmit, reset } = useForm<NecesidadType>({
+        resolver: zodResolver(necesidadSchema),
+        defaultValues: {
+            tipoNecesidad: "",
+            descripcion: "",
+            prioridad: "",
+            comunidadAfectada: ""
+        }
+    });
+
+    const onSubmitNecesidad: SubmitHandler<NecesidadType> = async (data) => {
+        console.log(data);
+
+        reset();
+    };
+
+    const tiposNecesidad = [
+        {id: 1, tipoValue: "alimentos", tipoTexto: "Alimentos"},
+        {id: 2, tipoValue: "ropa", tipoTexto: "Ropa"},
+        {id: 3, tipoValue: "materiales_construccion", tipoTexto: "Materiales de construcción"},
+        {id: 4, tipoValue: "otra", tipoTexto: "Otra"}
+    ];
+
+    const nivelesPrioridad = [
+        {id: 1, idPrioridad: "priori-alta", prioridadValue: "alta" , prioridadText: "Alta" },
+        {id: 2, idPrioridad: "priori-media", prioridadValue: "media", prioridadText: "Media"},
+        {id: 3, idPrioridad: "priori-baja", prioridadValue: "baja", prioridadText: "Baja"}
+    ];
+
+    return(
+        <div className="min-h-screen bg-gray-100 px-6 md:px-60 py-10">
+            <div className="max-w-6xl mx-auto flex flex-col gap-8">
+
+                {/* Encabezado del panel */}
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-3xl font-bold text-navy">Panel de Colaboradores</h1>
+                    <p className="text-gray-500 text-sm">
+                        Registra las necesidades que, en tiempo real, tienen las comunidades afectadas.
+                    </p>
+                </div>
+
+                {/* Formulario de registro de necesidades */}
+                <form
+                    className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:px-15 md:py-8"
+                    onSubmit={ handleSubmit(onSubmitNecesidad) }
+                >
+
+                    <h2 className="text-lg font-semibold text-navy mb-4">Registrar nueva necesidad</h2>
+
+
+                    <div className="grid grid-cols-1">
+                        <div className="flex flex-col gap-2 mb-5">
+                            <label htmlFor="tipo-necesidad" className="text-sm font-semibold text-navy">Tipo de necesidad</label>
+                            <select
+                                id="tipo-necesidad"
+                                { ...register("tipoNecesidad") }
+                                className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm
+                                           focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal"
+                            >
+                                <option value="" disabled>Seleccione el tipo de necesidad...</option>
+
+                                {tiposNecesidad.map((tipo) => (
+                                    <option key={tipo.id} value={tipo.tipoValue}>{tipo.tipoTexto}</option>
+                                ))}
+                            </select>
+
+                            { errors.tipoNecesidad?.message && <p className="text-sm text-red-500 mt-[2px]">{errors.tipoNecesidad.message}</p> }
+                        </div>
+
+                        <div className="flex flex-col gap-2 mb-5">
+                            <label htmlFor="descripcion" className="text-sm font-semibold text-navy">Descripción</label>
+                            <input
+                                id="descripcion"
+                                { ...register("descripcion") }
+                                placeholder="Describa la necesidad identificada"
+                                className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm
+                                           focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal"
+                            />
+
+                            { errors.descripcion?.message && <p className="text-sm text-red-500 mt-[2px]">{errors.descripcion.message}</p> }
+                        </div>
+
+                        <div className="flex flex-col gap-2 mb-5">
+                            <legend className="text-sm font-semibold text-navy">Nivel de prioridad</legend>
+
+                            {nivelesPrioridad.map((prioridad) => (
+                                <div key={prioridad.id} className="text-sm">
+                                    <input
+                                        id={prioridad.idPrioridad}
+                                        { ...register("prioridad") }
+                                        type="radio"
+                                        value={prioridad.prioridadValue}
+                                    />
+                                    <label htmlFor={prioridad.idPrioridad}>{prioridad.prioridadText}</label>
+                                </div>
+                            ))}
+
+                            { errors.prioridad?.message && <p className="text-sm text-red-500 mt-[2px]">{errors.prioridad.message}</p> }
+                        </div>
+
+                        <div className="flex flex-col gap-2 mb-5">
+                            <label htmlFor="comunidad-afectada" className="text-sm font-semibold text-navy">Comunidad afectada</label>
+                            <input
+                                id="comunidad-afectada"
+                                { ...register("comunidadAfectada") }
+                                placeholder="Nombre de la comunidad afectada"
+                                className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm
+                                           focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal"
+                            />
+
+                            { errors.comunidadAfectada?.message && <p className="text-sm text-red-500 mt-[2px]">{errors.comunidadAfectada.message}</p> }
+                        </div>
+                    </div>
+
+                    <button
+                        className="bg-teal text-navy font-semibold px-6 py-2.5 rounded-lg
+                                   hover:bg-teal/90 transition-all duration-200 mt-4"
+                    >
+                        Registrar necesidad
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+};

@@ -1,0 +1,56 @@
+services:
+    db-mysql:
+        image: donaton-db
+        build:
+            context: ./containers/mysql
+        container_name: donaton_db
+        restart: unless-stopped
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
+            - MYSQL_DATABASE=${DATABASE_NAME}
+            - MYSQL_USER=${DATABASE_USER}
+            - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+        volumes:
+            - mysql-data:/var/lib/mysql
+            - ./containers/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${ROOT_PASSWORD}"]
+            interval: 5s
+            timeout: 3s
+            retries: 30
+        networks:
+            - donaton_network
+
+    api-nextjs:
+        image: donaton-backend
+        build:
+            context: .
+            dockerfile: containers/api/Dockerfile
+        container_name: donaton_backend
+        restart: unless-stopped
+        ports:
+            - "3000:3000"
+        environment:
+            DATABASE_URL: "mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@db-mysql:3306/${DATABASE_NAME}"
+            DATABASE_HOST: "db-mysql"
+            DATABASE_USER: "${DATABASE_USER}"
+            DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+            DATABASE_NAME: "${DATABASE_NAME}"
+        depends_on:
+            db-mysql:
+                condition: service_healthy
+        networks:
+            - donaton_network
+ 
+volumes:
+    mysql-data:
+
+networks:
+    # Debe crearse 'donaton_network' antes de ejecutar 'docker compose up [servicio] [options]'
+    # con el comando 'docker network create --driver bridge donaton_network'.
+    # El argumento '--driver' permite que docker compose gestione la red automaticamente.
+    # Atributos 'external' y 'driver' no pueden ir juntos en 'docker-compose.yml'.
+    donaton_network:
+        external: true

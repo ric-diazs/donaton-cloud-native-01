@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// Modelos de datos
+
+// Los atributos @@map() y @map() sirven para renombrar las tablas y las columnas
+// luego de ser creadas por Prisma.
+// Mas info en:
+//    https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/custom-model-and-field-names#using-map-and-map-to-rename-fields-and-models-in-the-prisma-client-api
+enum Rol {
+    ADMIN
+    VOLUNTARIO
+    COLABORADOR
+}
+
+model Usuario {
+    id        Int @id @default(autoincrement())
+    nombre    String
+    correo    String @unique
+    password  String
+    rol       Rol @default(VOLUNTARIO)
+    nombreOrg String? @map("nombre_org")
+    creadoEn  DateTime @default(now()) @map("creado_en")
+
+    @@map("usuario")
+}
+
+model Donacion {
+    id            Int @id @default(autoincrement())
+    tipo          String
+    cantidad      Int
+    peso          Decimal
+    nombreDonante String? @map("nombre_donante")
+    correoDonante String @map("correo_donante")
+    creadoEn      DateTime @default(now()) @map("creado_en")
+
+    @@map("donacion")
+}
+
+model Necesidad {
+    id                Int @id @default(autoincrement())
+    tipoNecesidad     String @map("tipo_necesidad")
+    descripcion       String
+    prioridad         String
+    comunidadAfectada String @map("comunidad_afectada")
+    creadoEn          DateTime @default(now()) @map("creado_en")
+
+    @@map("necesidad")
+}
+
