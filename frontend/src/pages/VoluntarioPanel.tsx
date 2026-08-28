@@ -208,7 +208,7 @@ export default function VoluntarioPanel() {
 
                     {/* Codigo de la tabla (por agregar) */}
                     <div className="overflow-x-auto">
-                        { donaciones ?
+                        { donaciones.length !== 0 ?
                             (
                                 <table className="w-full text-sm">
                                     <thead className="bg-gray-50 text-gray-500 text-left">
@@ -248,7 +248,7 @@ export default function VoluntarioPanel() {
                                 </table>
                             )
                             :
-                            (<p>No se han registrado donaciones aún</p>)
+                            (<p className="py-6 text-md text-center text-navy">No hay donaciones registradas</p>)
                         }
                     </div>
                 </div>
