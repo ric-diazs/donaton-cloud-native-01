@@ -1,8 +1,14 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { necesidadSchema, type NecesidadType } from "../schemas/necesidadSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import type { NecesidadResponse } from "../dtos/necesidadResponseDto";
 
 export default function ColaboradorPanel () {
+    const [ necesidades, setNecesidades ] = useState<NecesidadResponse[]>([]);
+    
+    const [ serverError, setServerError ] = useState<string | null>(null);
+
     const { register, formState: { errors }, handleSubmit, reset } = useForm<NecesidadType>({
         resolver: zodResolver(necesidadSchema),
         defaultValues: {
@@ -13,11 +19,64 @@ export default function ColaboradorPanel () {
         }
     });
 
-    const onSubmitNecesidad: SubmitHandler<NecesidadType> = async (data) => {
-        console.log(data);
+    useEffect(() => {
+        const cargarNecesidades = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/api/necesidades");
 
-        reset();
+                const texto = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${texto}`);
+                }
+                
+                if (!texto.trim()) {
+                    setNecesidades([]);
+                    return;
+                }
+
+                const data: NecesidadResponse[] = JSON.parse(texto);
+                setNecesidades(data);
+
+            } catch(error) {
+                console.error(`Error al cargar las necesidades\nDetalle:\n${error}`)
+            }
+        }
+
+        cargarNecesidades()},[]
+    );
+
+    const onSubmitNecesidad: SubmitHandler<NecesidadType> = async (data) => {
+        try {
+            const response = await fetch("http://localhost:3000/api/necesidades", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const json = await response.json().catch(() => ({}));
+
+            // Mostrar mensajes de error si status code no es 200 y se sale de la funcion
+            if(!response.ok) {
+                const msg = (json && (json.error || json.message)) || `Error ${response.status}`;
+                setServerError(String(msg));
+
+                return;
+            }
+
+            // Si datos fueron enviados exitosamente, se reinicia el formulario.
+            if(serverError) {
+                setServerError(null);
+            }
+
+            reset();
+        } catch(error: any) {
+            setServerError(error?.message ?? "Error en el servidor");
+        }
     };
+
+    // Encabezados de las columnas de la tabla de donaciones
+    const necesidadesHeaders = ["Tipo", "Descripción", "Prioridad", "Comunidad"];
 
     const tiposNecesidad = [
         {id: 1, tipoValue: "alimentos", tipoTexto: "Alimentos"},
@@ -124,6 +183,56 @@ export default function ColaboradorPanel () {
                         Registrar necesidad
                     </button>
                 </form>
+
+{/* Tabla de donaciones registradas */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-100">
+                        <h2 className="text-lg font-semibold text-navy">Necesidades registradas</h2>
+                    </div>
+
+                    {/* Codigo de la tabla (por agregar) */}
+                    <div className="overflow-x-auto">
+                        { necesidades.length !== 0 ?
+                            (
+                                <table className="w-full text-sm">
+                                    <thead className="bg-gray-50 text-gray-500 text-left">
+                                        <tr>
+                                            {necesidadesHeaders.map((header, index) => (
+                                                <th key={index} className="px-6 py-3 font-semibold">
+                                                    {header}
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+
+                                    <tbody className="divide-y divide-gray-100">
+                                    {necesidades.map((necesidad) => (
+                                        <tr key={necesidad.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 font-medium text-navy">
+                                                {necesidad.tipoNecesidad}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-700">
+                                                {necesidad.descripcion}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-700">
+                                                {necesidad.prioridad}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-500">
+                                                {necesidad.comunidadAfectada}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-500">
+                                                {new Date(necesidad.creadoEn).toLocaleDateString("es-CL")}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            )
+                            :
+                            (<p className="py-6 text-md text-center text-navy">No hay necesidades registradas</p>)
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     );
