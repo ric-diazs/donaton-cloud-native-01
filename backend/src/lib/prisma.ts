@@ -1,7 +1,16 @@
 import "dotenv/config";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+//import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient } from "../../prisma/generated/prisma/client";
 
+const connectionString = process.env.DATABASE_URL;
+
+if(!connectionString) {
+    throw new Error("La variable 'DATABASE_URL' no está definida");
+}
+
+
+
+/*
 const adapter = new PrismaMariaDb({
     // Codigo tomado desde https://www.prisma.io/docs/prisma-orm/quickstart/mysql#7-instantiate-prisma-client
     host: process.env.DATABASE_HOST,
@@ -14,3 +23,4 @@ const adapter = new PrismaMariaDb({
 const prisma = new PrismaClient({ adapter: adapter });
 
 export { prisma };
+*/
