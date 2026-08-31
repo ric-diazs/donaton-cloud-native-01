@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 // Modelos de datos
@@ -26,11 +26,12 @@ enum Rol {
 
 model Usuario {
     id        Int @id @default(autoincrement())
-    nombre    String
-    correo    String @unique
-    password  String
+    supabaseId String @unique @map("supabase_id") // almacena el id (un GUUID) generado por Supabase en tabla 'auth.users'
+    nombre    String @db.VarChar(100)
+    correo    String @db.VarChar(50) @unique
+    //password  String @db.VarChar(255) // Supabase con su tabla auth.users se hara cargo de su gestion
     rol       Rol @default(VOLUNTARIO)
-    nombreOrg String? @map("nombre_org")
+    nombreOrg String? @db.VarChar(100) @map("nombre_org")
     creadoEn  DateTime @default(now()) @map("creado_en")
 
     @@map("usuario")
@@ -38,11 +39,11 @@ model Usuario {
 
 model Donacion {
     id            Int @id @default(autoincrement())
-    tipo          String
+    tipo          String @db.VarChar(100)
     cantidad      Int
     peso          Decimal
-    nombreDonante String? @map("nombre_donante")
-    correoDonante String @map("correo_donante")
+    nombreDonante String? @db.VarChar(100) @map("nombre_donante")
+    correoDonante String @db.VarChar(50) @map("correo_donante")
     creadoEn      DateTime @default(now()) @map("creado_en")
 
     @@map("donacion")
@@ -50,10 +51,10 @@ model Donacion {
 
 model Necesidad {
     id                Int @id @default(autoincrement())
-    tipoNecesidad     String @map("tipo_necesidad")
-    descripcion       String
-    prioridad         String
-    comunidadAfectada String @map("comunidad_afectada")
+    tipoNecesidad     String @db.VarChar(50) @map("tipo_necesidad")
+    descripcion       String @db.VarChar(255)
+    prioridad         String @db.VarChar(15)
+    comunidadAfectada String @db.VarChar(100) @map("comunidad_afectada")
     creadoEn          DateTime @default(now()) @map("creado_en")
 
     @@map("necesidad")
