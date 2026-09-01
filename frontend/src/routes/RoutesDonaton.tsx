@@ -13,6 +13,7 @@ import Login from "../pages/Login";
 import Contacto from "../pages/Contacto";
 import VoluntarioPanel from "../pages/VoluntarioPanel";
 import ColaboradorPanel from "../pages/ColaboradorPanel";
+import AdminDashboard from "../pages/AdminDashboard";
 
 /**
 * Rutas de navegación de la plataforma web
@@ -28,6 +29,7 @@ export default function RoutesDonaton () {
                 <Route path="/contacto" element={<Contacto />} />
                 <Route path="/voluntario" element={<VoluntarioPanel />} />
                 <Route path="/colaborador" element={<ColaboradorPanel />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
             </Routes>
         </BrowserRouter>
     );
