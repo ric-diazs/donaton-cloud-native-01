@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import { type DonacionResponse } from "../dtos/donacionResponseDto";
 import { type NecesidadResponse } from "../dtos/necesidadResponseDto";
 import { type UsuarioResponse } from "../dtos/usuarioResponseDto";
+import { useNavigate } from "react-router";
 
 /**
  * Panel de administración del sistema Donaton.
@@ -39,6 +40,8 @@ export default function AdminDashboard () {
     const [ donaciones, setDonaciones ] = useState<DonacionResponse[]>([]);
     const [ necesidades, setNecesidades ] = useState<NecesidadResponse[]>([]);
     const [ usuarios, setUsuarios] = useState<UsuarioResponse[]>([]);
+
+    const navigate = useNavigate();
 
     // Se realizan tres peticiones (request) al backend con
     // Promise.all(). Como son asincronas, se realizan al mismo tiempo.
@@ -121,7 +124,7 @@ export default function AdminDashboard () {
 
                         {/* Gestion de usuarios */}
                         <div
-                        // Aca usar funcion 'navigate()'
+                            onClick={ () => navigate("/usuarios") } 
                             className="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6
                             flex items-center justify-between
                             hover:border-teal hover:shadow-md transition-all duration-200 cursor-pointer"
