@@ -15,6 +15,8 @@ import VoluntarioPanel from "../pages/VoluntarioPanel";
 import ColaboradorPanel from "../pages/ColaboradorPanel";
 import AdminDashboard from "../pages/AdminDashboard";
 import RegistroUsuarios from "../pages/RegistroUsuarios";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { Rol } from "../types/rolEnum";
 
 /**
 * Rutas de navegación de la plataforma web
@@ -23,16 +25,36 @@ import RegistroUsuarios from "../pages/RegistroUsuarios";
 */
 export default function RoutesDonaton () {
     return(
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/contacto" element={<Contacto />} />
-                <Route path="/voluntario" element={<VoluntarioPanel />} />
-                <Route path="/colaborador" element={<ColaboradorPanel />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/usuarios" element={<RegistroUsuarios />} />
-            </Routes>
-        </BrowserRouter>
+       <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/contacto" element={<Contacto />} />
+
+        <Route path="/voluntario" element={
+          <ProtectedRoute rolesPermitidos={[Rol.VOLUNTARIO, Rol.ADMIN]}>
+            <VoluntarioPanel />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/colaborador" element={
+          <ProtectedRoute rolesPermitidos={[Rol.COLABORADOR, Rol.ADMIN]}>
+            <ColaboradorPanel />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/admin-dashboard" element={
+          <ProtectedRoute rolesPermitidos={[Rol.ADMIN]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/usuarios" element={
+          <ProtectedRoute rolesPermitidos={[Rol.ADMIN]}>
+            <RegistroUsuarios />
+          </ProtectedRoute>
+        } />
+      </Routes>
+    </BrowserRouter>
     );
 };

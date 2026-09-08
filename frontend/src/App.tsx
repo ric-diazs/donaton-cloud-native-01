@@ -1,3 +1,4 @@
+import { AuthProvider } from "./context/AuthContext";
 import RoutesDonaton from "./routes/RoutesDonaton";
 
 function App() {
@@ -9,7 +10,9 @@ function App() {
     // - [ ] Agregar tabla de necesidades en vista Landing.tsx
     // - [ ] Backend para Contacto.tsx (quedara para cuando veamos lo de las colas en clases)
     return (
-        <RoutesDonaton />
+        <AuthProvider>
+      <RoutesDonaton />
+    </AuthProvider>
     );
 }
 
