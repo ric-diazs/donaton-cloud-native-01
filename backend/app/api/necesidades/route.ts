@@ -8,11 +8,7 @@ const necesidadRepository = new NecesidadRepository(),
 export const GET = async () => {
     const necesidades = await necesidadService.obtenerNecesidades();
 
-    if(!necesidades || necesidades.length === 0) {
-        return new NextResponse(null, { status: 204 });
-    }
-
-    return NextResponse.json(necesidades, { status: 200 });
+    return NextResponse.json(necesidades ?? [], { status: 200 });
 };
 
 export const POST = async (request: NextRequest) => {

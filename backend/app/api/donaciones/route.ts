@@ -7,13 +7,9 @@ const donacionRepository = new DonacionRepository(),
 
 
 export const GET = async () => {
-        const donaciones = await donacionService.obtenerDonaciones();
+    const donaciones = await donacionService.obtenerDonaciones();
 
-        if(!donaciones || donaciones.length === 0) {
-            return new NextResponse(null, { status: 204 });
-        };
-
-        return NextResponse.json(donaciones, { status: 200 });
+    return NextResponse.json(donaciones ?? [], { status: 200 });
 };
 
 export const POST = async(request: NextRequest) => {
@@ -28,6 +24,4 @@ export const POST = async(request: NextRequest) => {
 
         return NextResponse.json({ error: mensajeError }, { status: 400 });
     }
-
 };
-

@@ -6,13 +6,9 @@ const usuarioRepository = new UsuarioRepository(),
       usuarioService = new UsuarioService(usuarioRepository);
 
 export const GET = async () => {
-        const usuarios = await usuarioService.obtenerUsuarios();
+    const usuarios = await usuarioService.obtenerUsuarios();
 
-        if(!usuarios || usuarios.length === 0) {
-            return new NextResponse(null, { status: 204 });
-        };
-
-        return NextResponse.json(usuarios, { status: 200 });
+    return NextResponse.json(usuarios ?? [], { status: 200 });
 };
 
 export const POST = async(request: NextRequest) => {
@@ -27,5 +23,4 @@ export const POST = async(request: NextRequest) => {
 
         return NextResponse.json({ error: mensajeError }, { status: 400 });
     }
-
 };
