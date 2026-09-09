@@ -7,13 +7,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Lista blanca de URLs que tienen permitido acceder al backend
 const allowedOrigins = [
-    "http://localhost:5174"
+    "http://localhost:5173"
 ];
 
 // Las opciones del CORS permitidas que apareceran en el header de la request
 const corsOptions = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials': 'true',
 }
 
 export const proxy = (request: NextRequest) => {
