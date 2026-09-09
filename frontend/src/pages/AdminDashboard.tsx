@@ -27,6 +27,7 @@ import { type DonacionResponse } from "../dtos/donacionResponseDto";
 import { type NecesidadResponse } from "../dtos/necesidadResponseDto";
 import { type UsuarioResponse } from "../dtos/usuarioResponseDto";
 import { useNavigate } from "react-router";
+import PanelHeader from "../components/panelheader";
 
 /**
  * Panel de administración del sistema Donaton.
@@ -47,9 +48,9 @@ export default function AdminDashboard () {
     // Promise.all(). Como son asincronas, se realizan al mismo tiempo.
     useEffect(() => {
         Promise.all([
-            fetch("http://localhost:3000/api/donaciones").then((response) => response.json()),
-            fetch("http://localhost:3000/api/necesidades").then((response) => response.json()),
-            fetch("http://localhost:3000/api/usuarios").then((response) => response.json())
+            fetch("http://localhost:3000/api/donaciones", { credentials: "include" }).then((response) => response.json()),
+            fetch("http://localhost:3000/api/necesidades", { credentials: "include" }).then((response) => response.json()),
+            fetch("http://localhost:3000/api/usuarios", { credentials: "include" }).then((response) => response.json())
         ])
         .then(([donacion, necesidad, usuario]) => {
             setDonaciones(donacion)
@@ -91,10 +92,10 @@ export default function AdminDashboard () {
             <div className="max-w-6xl mx-auto flex flex-col gap-8">
 
                 {/* Encabezado del panel */}
-                <div className="flex flex-col gap-1">
-                    <h1 className="text-3xl font-bold text-navy">Panel de Administración</h1>
-                    <p className="text-gray-500 text-sm">Vista general del sistema y accesos a la gestión.</p>
-                </div>
+                <PanelHeader
+                    titulo="Panel de Administración"
+                    subtitulo="Vista general del sistema y accesos a la gestión."
+                />
 
                 {/* Tarjetas de metricas */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -3,6 +3,7 @@ import { necesidadSchema, type NecesidadType } from "../schemas/necesidadSchema"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import type { NecesidadResponse } from "../dtos/necesidadResponseDto";
+import PanelHeader from "../components/panelheader";
 
 export default function ColaboradorPanel () {
     const [ necesidades, setNecesidades ] = useState<NecesidadResponse[]>([]);
@@ -22,7 +23,9 @@ export default function ColaboradorPanel () {
     useEffect(() => {
         const cargarNecesidades = async () => {
             try {
-                const response = await fetch("http://localhost:3000/api/necesidades");
+                const response = await fetch("http://localhost:3000/api/necesidades", {
+                    credentials: "include"
+                });
 
                 const texto = await response.text();
 
@@ -51,6 +54,7 @@ export default function ColaboradorPanel () {
             const response = await fetch("http://localhost:3000/api/necesidades", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(data)
             });
 
@@ -96,12 +100,10 @@ export default function ColaboradorPanel () {
             <div className="max-w-6xl mx-auto flex flex-col gap-8">
 
                 {/* Encabezado del panel */}
-                <div className="flex flex-col gap-1">
-                    <h1 className="text-3xl font-bold text-navy">Panel de Colaboradores</h1>
-                    <p className="text-gray-500 text-sm">
-                        Registra las necesidades que, en tiempo real, tienen las comunidades afectadas.
-                    </p>
-                </div>
+                <PanelHeader
+                    titulo="Panel de Colaboradores"
+                    subtitulo="Registra las necesidades que, en tiempo real, tienen las comunidades afectadas."
+                />
 
                 {/* Formulario de registro de necesidades */}
                 <form
@@ -182,6 +184,8 @@ export default function ColaboradorPanel () {
                     >
                         Registrar necesidad
                     </button>
+
+                    { serverError && (<p className="mt-3 text-sm text-red-500">Error: {serverError}</p>) }
                 </form>
 
 {/* Tabla de donaciones registradas */}

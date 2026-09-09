@@ -51,7 +51,9 @@ export default function RegistroUsuarios() {
     useEffect(() => {
         const cargarUsuarios = async () => {
             try {
-                const response = await fetch("http://localhost:3000/api/usuarios");
+                const response = await fetch("http://localhost:3000/api/usuarios", {
+                    credentials: "include"
+                });
 
                 const texto = await response.text();
 
@@ -80,6 +82,7 @@ export default function RegistroUsuarios() {
             const response = await fetch("http://localhost:3000/api/usuarios", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(data)
             });
 

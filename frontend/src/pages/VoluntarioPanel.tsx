@@ -1,4 +1,3 @@
-
 /**
  * @module pages/VoluntarioPanel
  * @author Remi García, Benjamin Llanquiman y Ricardo Díaz.
@@ -20,6 +19,7 @@ import { donacionSchema, type DonacionType } from "../schemas/donacionSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import type { DonacionResponse } from "../dtos/donacionResponseDto";
+import PanelHeader from "../components/panelheader";
 
 /**
  * Panel del voluntario para registro y consulta de donaciones en terreno.
@@ -48,13 +48,11 @@ export default function VoluntarioPanel() {
     useEffect(() => {
         const cargarDonaciones = async () => {
             try {
-                const response = await fetch("http://localhost:3000/api/donaciones");
+                const response = await fetch("http://localhost:3000/api/donaciones", {
+                    credentials: "include"
+                });
 
                 const texto = await response.text();
-
-
-                console.log("Status:", response.status);
-                console.log("Respuesta:", texto);
 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${texto}`);
@@ -83,6 +81,7 @@ export default function VoluntarioPanel() {
             const response = await fetch("http://localhost:3000/api/donaciones", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify(data)
             });
 
@@ -113,12 +112,10 @@ export default function VoluntarioPanel() {
             <div className="max-w-6xl mx-auto flex flex-col gap-8">
 
                 {/* Encabezado del panel */}
-                <div className="flex flex-col gap-1">
-                    <h1 className="text-3xl font-bold text-navy">Panel del Voluntario</h1>
-                    <p className="text-gray-500 text-sm">
-                        Registra las donaciones recibidas en el centro de acopio.
-                    </p>
-                </div>
+                <PanelHeader
+                    titulo="Panel del Voluntario"
+                    subtitulo="Registra las donaciones recibidas en el centro de acopio."
+                />
 
                 {/* Formulario de registro de donación */}
                 <form
