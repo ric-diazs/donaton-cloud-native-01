@@ -1,4 +1,4 @@
-import { createClient } from "../lib/supabase/server";
+import { createAdminClient } from "../lib/supabase/admin";
 import { UsuarioRepository } from "../repository/usuarioRepository";
 import { usuarioSchema } from "../schemas/usuarioSchema";
 
@@ -33,11 +33,12 @@ export class UsuarioService {
         // Primero se guarda el usuario en la tabla 'auth.user' de Supabase
         // Aca se obtiene un 'user' de tipo 'User' de Auth, del cual se usara
         // su 'id' que sera el valor de 'supabaseId' de la tabla 'public.usuario'
-        const supabase = await createClient();
+        const supabase = await createAdminClient();
 
         const { data: user, error } = await supabase.auth.admin.createUser({
             email: correo,
-            password: password
+            password: password,
+            email_confirm: true
         });
 
         if(error) {
@@ -65,7 +66,7 @@ export class UsuarioService {
         }
 
         // Primero se elimina al usuario en la tabla 'auth.user'
-        const supabase = await createClient();
+        const supabase = await createAdminClient();
 
         const { error } = await supabase.auth.admin.deleteUser(usuario.supabaseId)
 
