@@ -6,13 +6,19 @@
  * Flujo de autenticación:
  * 1. El usuario ingresa su correo y contraseña.
  * 2. Al hacer clic en "Ingresar", se valida que los campos no estén vacíos.
+ * 3. Se envían las credenciales al backend, que valida contra Supabase Auth
+ *    y devuelve el usuario junto con una cookie httpOnly con el JWT.
+ * 4. Según el rol del usuario, se redirige al panel correspondiente.
  *
  */
 
+import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { LoginSchema, type LoginType } from "../schemas/loginSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
+import { Rol } from "../types/rolEnum";
 
 /**
  * Página de inicio de sesión del sistema Donaton.
@@ -35,14 +41,34 @@ export default function Login(){
     // Navegacion
     const navigate = useNavigate();
 
+    // Funcion de login del contexto de autenticacion (llama al backend)
+    const { login } = useAuth();
+
+    // Mensaje de error en caso de credenciales invalidas
+    const [errorLogin, setErrorLogin] = useState<string | null>(null);
+
     // Funcion para gestion de envio de datos del formulario
     const onSubmitLogin: SubmitHandler<LoginType> = async (data) => {
-        // Se muestran los datos por consola. Posteriormente se agregara la logica
-        // para el envio al backend
-        console.log(data);
+        setErrorLogin(null);
 
-        // Se resetea el formulario
-        reset();
+        try {
+            // Se envian las credenciales al backend a traves del contexto
+            const usuario = await login(data);
+
+            // Se resetea el formulario
+            reset();
+
+            // Se redirige segun el rol del usuario autenticado
+            if (usuario.rol === Rol.ADMIN) {
+                navigate("/admin-dashboard");
+            } else if (usuario.rol === Rol.COLABORADOR) {
+                navigate("/colaborador");
+            } else {
+                navigate("/voluntario");
+            }
+        } catch {
+            setErrorLogin("Correo o contraseña incorrectos");
+        }
     };
 
     return(
@@ -88,6 +114,11 @@ export default function Login(){
 
                     {errors.password?.message && <p className="text-sm text-red-500 mt-[2px]">{errors.password.message}</p> }
                 </div>
+
+                {/* Mensaje de error de credenciales invalidas */}
+                {errorLogin && (
+                    <p className="text-sm text-red-500 text-center -mt-2">{errorLogin}</p>
+                )}
 
                 {/* Botón de ingreso al sistema */}
                 <button

@@ -1,17 +1,21 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { Rol } from "../types/rolEnum";
+import type { LoginType } from "../schemas/loginSchema";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface Usuario {
-  id: string;
+  id: number;
   nombre: string;
+  correo?: string;
   rol: Rol;
 }
 
 interface AuthContextType {
   usuario: Usuario | null;
   cargando: boolean;
-  login: (usuario: Usuario) => void;
+  login: (credenciales: LoginType) => Promise<Usuario>;
   logout: () => void;
 }
 
@@ -22,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
+    fetch(`${API_URL}/api/auth/me`, { credentials: "include" })
       .then((res) => {
         if (!res.ok) throw new Error("No autenticado");
         return res.json();
@@ -32,12 +36,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setCargando(false));
   }, []);
 
-  function login(usuario: Usuario) {
-    setUsuario(usuario);
+  async function login(credenciales: LoginType): Promise<Usuario> {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(credenciales),
+    });
+
+    if (!res.ok) {
+      throw new Error("Credenciales inválidas");
+    }
+
+    const data = await res.json();
+    setUsuario(data);
+    return data;
   }
 
   async function logout() {
-    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    await fetch(`${API_URL}/api/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
     setUsuario(null);
   }
 
